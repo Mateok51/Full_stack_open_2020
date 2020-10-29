@@ -1,4 +1,3 @@
-import axios from "axios"
 import React from "react"
 import dataServices from "../services/dataServices"
 
@@ -9,6 +8,7 @@ const PersonForm = ({
   setNewName,
   newNumber,
   setNewNumber,
+  setNotification,
 }) => {
   const addPerson = (Event) => {
     Event.preventDefault()
@@ -40,11 +40,29 @@ const PersonForm = ({
           dataServices
             .changeNumber(changedNumberPerson.id, changedNumberPerson)
             .then((returnedPerson) => {
+              //Show notification about changing the number
+              setNotification(
+                `The number of ${personObject.name} is changed to ${personObject.number}`
+              )
+              setInterval(() => {
+                setNotification(null)
+              }, 5000)
               setPersons(
                 persons.map((person) =>
                   person.name !== personObject.name ? person : returnedPerson
                 )
               )
+            })
+            .catch((error) => {
+              setNotification(
+                "There has been a change in the list. List is refreshed"
+              )
+              setInterval(() => {
+                setNotification(null)
+              }, 5000)
+              dataServices.getAll().then((initalPerons) => {
+                setPersons(initalPerons)
+              })
             })
         }
       } else if (
@@ -53,7 +71,26 @@ const PersonForm = ({
       ) {
         dataServices
           .create(personObject)
-          .then((returnedPerson) => setPersons(persons.concat(returnedPerson)))
+          .then((returnedPerson) => {
+            setNotification(
+              `Person with the name of ${personObject.name} is added to the phonebook`
+            )
+            setInterval(() => {
+              setNotification(null)
+            }, 5000)
+            return setPersons(persons.concat(returnedPerson))
+          })
+          .catch((error) => {
+            setNotification(
+              "There has been a change in the list. List is refreshed"
+            )
+            setInterval(() => {
+              setNotification(null)
+            }, 5000)
+            dataServices.getAll().then((initalPerons) => {
+              setPersons(initalPerons)
+            })
+          })
       }
     }
   }
