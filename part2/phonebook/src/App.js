@@ -1,16 +1,22 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Filter from "./components/Filter"
 import PersonForm from "./components/PersonForm"
 import Persons from "./components/Persons"
+import dataServices from "./services/dataServices"
 
 const App = () => {
   //Initialize content saved in array Persons
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", id: 1, number: "0914443378" },
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState("Person name")
   const [newNumber, setNewNumber] = useState("Number")
   const [filterName, setFilterName] = useState("name")
+
+  //Gets all the data from the database
+  useEffect(() => {
+    dataServices.getAll().then((initalPerons) => {
+      setPersons(initalPerons)
+    })
+  }, [])
 
   return (
     <div>
@@ -27,7 +33,11 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons persons={persons} filterName={filterName} />
+      <Persons
+        persons={persons}
+        filterName={filterName}
+        setPersons={setPersons}
+      />
     </div>
   )
 }
