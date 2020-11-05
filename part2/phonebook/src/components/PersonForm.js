@@ -81,9 +81,8 @@ const PersonForm = ({
             return setPersons(persons.concat(returnedPerson))
           })
           .catch((error) => {
-            setNotification(
-              "There has been a change in the list. List is refreshed"
-            )
+            var displayError = JSON.stringify(error.response.data)
+            setNotification(displayError)
             setInterval(() => {
               setNotification(null)
             }, 5000)
